@@ -1,66 +1,91 @@
 ﻿<div align="center">
 
 # AZA — Algorithmic Zoning Architect
-### *The Computational Engine for Interior Architectural Programming*
+### *An Experimental Exploration of Voronoi-Based Space Planning for Interior Architecture*
 
-[![Distribution](https://img.shields.io/badge/Release-v0.1.0--alpha-blue?style=for-the-badge)](https://github.com/Ibrahim-3d/Algorithmic-Zoning-Architect-Dist/releases)
-[![Platform](https://img.shields.io/badge/Platform-Windows-lightgrey?style=for-the-badge&logo=windows)](https://github.com/Ibrahim-3d/Algorithmic-Zoning-Architect-Dist/releases)
+[![Release](https://img.shields.io/github/v/release/Ibrahim-3d/Algorithmic-Zoning-Architect-Dist?style=for-the-badge&color=blue)](https://github.com/Ibrahim-3d/Algorithmic-Zoning-Architect-Dist/releases)
+[![Platform](https://img.shields.io/badge/Platform-Windows-0078D4?style=for-the-badge&logo=windows)](https://github.com/Ibrahim-3d/Algorithmic-Zoning-Architect-Dist/releases)
 [![License](https://img.shields.io/badge/License-Proprietary-red?style=for-the-badge)](LICENSE)
+[![Status](https://img.shields.io/badge/Status-Research_/_Experimental-orange?style=for-the-badge)](#-research-context)
 
 ---
 
-### 🚀 [DOWNLOAD LATEST WINDOWS RELEASE (v0.1.0-ALPHA)](https://github.com/Ibrahim-3d/Algorithmic-Zoning-Architect-Dist/releases/download/v0.1.0/AlgorithmicZoningArchitect_v0.1.0.zip)
-*No Python installation required. Standalone binary bundle.*
+### 🚀 [DOWNLOAD STANDALONE v0.1.0-ALPHA (.ZIP)](https://github.com/Ibrahim-3d/Algorithmic-Zoning-Architect-Dist/releases/download/v0.1.0/AlgorithmicZoningArchitect_v0.1.0.zip)
+**Standalone Windows Binary • No Python Required • Zero Dependencies**
 
 ---
 </div>
 
-## 📌 Overview
-**Algorithmic Zoning Architect (AZA)** is a professional-grade research tool designed to bridge the gap between an architectural brief and a spatial concept. It utilizes **Capacity-Constrained Power Diagrams** to automatically generate optimized floor plan partitions based on target areas and complex adjacency requirements.
+## 📌 About This Experiment
+**AZA** is a conceptual research instrument that investigates how **weighted Voronoi mass studies** and **capacity-constrained power diagrams** can be applied to early-stage architectural space planning and interior zoning.
 
-Whether you are managing a high-density office layout or a complex laboratory program, AZA provides a mathematically rigorous yet intuitively interactive environment for early schematic design.
+In architectural practice, the transition from a written brief into a spatial concept is often intuition-driven. AZA asks: *what if that process could be partially automated through computational geometry, producing concept lines and zone boundaries that respond to area constraints in real time?*
 
-## ✨ Key Features
+## ✨ Core Capabilities
 
-### 🔹 Intelligent Area-Constrained Solving
-Input your program requirements in ^2$, and AZA’s iterative weight optimizer ensures every zone meets its target area with **<1% margin of error**.
+| Capability | Description |
+|---|---|
+| **Area-Constrained Solving** | Iterative weight optimization ensures each zone meets its ^2$ target with high precision (<1% error). |
+| **Adjacency-Aware Zoning** | An optional matrix encodes P/S/X/N relationships. The solver translates these into attraction and repulsion forces, nudging seeds toward spatially coherent configurations. |
+| **Interactive Seed Sculpting** | Drag programmatic anchors across the canvas to reshape the partition in real time with quick-solve feedback (~30ms). |
+| **Circulation Gaps** | Adjustable gap width introduces negative-buffer corridors between zones, simulating hallways and partition thickness. |
+| **CAD-Ready Export** | Layered **DXF** and **SVG** output for further development in AutoCAD, Rhino, Revit, or Illustrator. |
+| **Project Persistence** | Save and load complete floor programs (zones + adjacency) via structured JSON metadata. |
 
-### 🔹 Relationship-Driven Layouts (Adjacency Matrix)
-Define **Primary (P)**, **Secondary (S)**, and **Conflict (X)** relationships. The solver generates attraction and repulsion forces that nudge zones into spatially coherent configurations that respect circulation logic and acoustic separation.
+## 🧠 The Computational Engine
 
-### 🔹 Real-Time Interactive Sculpting
-Don't just calculate—design. Drag "seeds" (program anchors) across the canvas to see the Voronoi boundaries adapt instantly. Adjust **Circulation Gaps** to simulate hallway widths and partition thicknesses on the fly.
+### Power Diagram Construction
+AZA utilizes the **3D Lifting Trick**: each weighted 2D point is projected onto a paraboloid ( = x^2 + y^2 - w$). The lower convex hull of these lifted points, projected back to 2D, yields the power diagram—a weighted Voronoi partition where boundaries respond to the relative "pressure" of each generator.
 
-### 🔹 Professional CAD Interoperability
-Export your generated diagrams as **layered DXF** or **SVG** files, ready to be imported directly into **AutoCAD, Rhino, Revit, or Illustrator** for further refinement.
+### The Iterative Solver Loop
+The solver executes a triple-objective optimization per step:
+1.  **Weight Adjustment:** Compares actual cell areas against targets, adjusting "pressure" weights with normalized learning rates.
+2.  **Adjacency Forces:**
+    *   **P — Primary:** (Must share wall/door) Continuous attraction force.
+    *   **S — Secondary:** (Should be nearby) Proximity-based attraction.
+    *   **X — Conflict:** (Needs separation) Repulsion force for noise/hygiene buffers.
+3.  **Lloyd Relaxation:** Gently pulls seeds toward their cell centroids, producing compact, architecturally coherent geometries.
 
-### 🔹 Advanced Data Visualization
-*   **Adjacency Matrix Viewer:** Inspect the entire program logic in a color-coded grid.
-*   **Live Area Stats:** Monitor actual vs. target area convergence in real-time.
-*   **Unallocated Space Detection:** Automatically isolate surplus site area for better space management.
+## 📂 Floor Program JSON Format
+AZA allows you to load a complete architectural brief from a single JSON file. You can find examples in the examples/ folder.
 
-## 🛠 How to Get Started
-1.  **Download:** Grab the .zip file from the [Releases](https://github.com/Ibrahim-3d/Algorithmic-Zoning-Architect-Dist/releases) page.
-2.  **Extract:** Unzip the folder to your desired location.
-3.  **Run:** Launch AlgorithmicZoningArchitect.exe.
-4.  **Load Program:** Go to File -> Load Floor Program to test with included examples (ground_floor.json).
+`jsonc
+{
+  "zone_categories": {
+    "CREATE": { "color": "#9B5DE5", "label": "Workspace" },
+    "CHILL":  { "color": "#81B29A", "label": "Wellbeing" }
+  },
+  "zones": [
+    { "id": "GF01", "name": "Lobby", "category": "CREATE", "target_area": 200 }
+  ],
+  "adjacency": {
+    "relationships": [
+      ["GF01", "GF02", "P", "Primary circulation connection"]
+    ]
+  }
+}
+`
 
-## 🧠 The Science Behind AZA
-AZA is built on cutting-edge computational geometry:
-*   **Weighted Power Diagrams:** Utilizing the "3D Lifting Trick" to project 2D points onto a paraboloid for robust cell construction.
-*   **Lloyd Relaxation:** Centroidal Voronoi Tessellation (CVT) logic ensures compact, architecturally viable shapes.
-*   **Force-Directed Optimization:** Seed placement is governed by a multi-objective optimizer balancing area precision and adjacency satisfaction.
+## 🛠 Usage Instructions
+1.  **Download & Extract:** Get the latest release and unzip it.
+2.  **Launch:** Run AlgorithmicZoningArchitect.exe.
+3.  **Define Site:** Input total area or import an **SVG boundary**.
+4.  **Program:** Add zones manually or load a JSON brief via File -> Load Floor Program.
+5.  **Solve:** Click **"Run Solver"** and watch the area convergence stats in real-time.
+6.  **Analyze:** Use Analysis -> Show Adjacency Matrix to verify program satisfaction.
 
 ---
 
-## 📄 License & Terms
-This is a **Proprietary** software distribution. All rights reserved by **Ibrahim-3d**. 
-*   **Usage:** Authorized for research and evaluation purposes.
-*   **Redistribution:** Prohibited without explicit consent.
-*   **Source Code:** The source code is closed-source and managed in a private repository.
+## 🔬 Research Context
+This work sits at the intersection of **computational design**, **operations research**, and **architectural programming**. It draws on:
+*   *Power Diagrams (Aurenhammer, 1987)*
+*   *Capacity-Constrained Point Distributions (Balzer et al., 2009)*
+*   *Centroidal Voronoi Tessellations (Du et al., 1999)*
 
-## 🔍 SEO & Keywords
-Architectural Programming | Space Planning Software | Voronoi Floor Plan Generator | Computational Design | Algorithmic Architecture | Power Diagrams | Generative Design Tool | Interior Design Automation | Schematic Design | Space Programming
+## 📄 License
+**Proprietary Software Distribution.**
+Copyright © 2026 Ibrahim-3d. All Rights Reserved.
+This binary distribution is provided for research and evaluation purposes. Unauthorized redistribution or reverse engineering is strictly prohibited.
 
 ---
-*Developed with ❤️ for the future of architectural practice.*
+*Developed by Ibrahim-3d • [Report an Issue](https://github.com/Ibrahim-3d/Algorithmic-Zoning-Architect-Dist/issues)*
